@@ -4,9 +4,9 @@
   "description": "Library Web App",
   "main": "src/server.js",
   "scripts": {
-    "server": "node src/server.js",
+    "start": "node src/server.js",
     "local": "nodemon server/server.js",
-    "start": "react-scripts start",
+    "run": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
