@@ -2,7 +2,7 @@ const {format, createLogger, transports} = require('winston');
 const dateformat = require('dateformat');
 const path = require('path');
 const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'debug';
-const logToFile = process.env.LOG_TO_FILE;
+const logToFile = true;
 
 const levelToUppercaseFormat = format(info => {
     info.level = info.level.toUpperCase();
