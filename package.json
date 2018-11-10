@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Library Web App",
   "main": "src/server.js",
+  "engines": {
+    "node": "10.10"
+  },
   "scripts": {
     "start": "node server/server.js",
     "local": "nodemon server/server.js",
