@@ -4,7 +4,9 @@ const path = require('path');
 const http = require('http');
 const logger = require('./logger');
 const port = process.env.PORT || 3000;
+const cors = require('cors');
 
+app.use(cors({origin: ['http://localhost:3001']}));
 app.use(express.static(path.join(__dirname, '../build')));
 
 app.get('*', logRequest);
@@ -12,6 +14,11 @@ app.get('*', logRequest);
 /*app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../build/index.html'));
 });*/
+
+app.get("/data", someDataHandler);
+function someDataHandler (req, res) {
+    res.send({data: "Data from server"});
+}
 
 const server = http.createServer(app);
 server.listen(port, () => logger.info(`Library App is running on ${port}`));

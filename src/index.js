@@ -1,20 +1,11 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
+import { runWithAdal } from 'react-adal';
+import { authContext } from './adal-config';
 
-class Page extends React.Component {
-    render() {
-        return (
-            <div>
-                <h1>Library App</h1>
-            </div>
-        );
-    }
-}
+const DO_NOT_LOGIN = false;
 
-// ========================================
+runWithAdal(authContext, () => {
 
-ReactDOM.render(
-    <Page />,
-    document.getElementById('root')
-);
+    // eslint-disable-next-line
+    require('./indexApp.js');
+
+},DO_NOT_LOGIN);
