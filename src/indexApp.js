@@ -15,29 +15,26 @@ class Books extends React.Component {
         adalApiFetch(fetch, "http://localhost:3000/api/books")
             .then(results => results.json())
             .then(results => {
-                console.log(results);
                 this.setState({books: results});
             })
-            .catch(err => console.log(err))
     }
 
     render() {
         return (
             <div>
-                <table className="book-list">
+                <table className="table">
                     <thead>
                         <tr>
-                            <th align="left">ID</th>
-                            <th align="left">Title</th>
-                            <th align="left">Author</th>
+                            <th scope="col" align="left">ID</th>
+                            <th scope="col" align="left">Title</th>
+                            <th scope="col" align="left">Author</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {console.log(this.state.books)}
                     {this.state.books.map(book => {
                         return (
                             <tr key={book.id}>
-                                <td>{book.id}</td>
+                                <th scope="row">{book.id}</th>
                                 <td>{book.title}</td>
                                 <td>{book.author}</td>
                             </tr>
@@ -55,11 +52,17 @@ class Page extends React.Component {
     render() {
         const user = authContext.getCachedUser();
         return (
-            <div>
-                <div style={{float: 'right'}}>{user.profile.name}<br/><span style={{fontSize: "8px"}}>{user.userName.toLowerCase()}</span></div>
-                <h1 style={{marginBottom: "5px"}}>Library</h1>
-                <hr style={{marginTop: "0px"}}/>
-                <Books/>
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-0 col-lg-2"></div>
+                    <div className="col-12 col-lg-8">
+
+                        <div style={{float: 'right'}}>{user.profile.name}<br/><span style={{fontSize: "8px"}}>{user.userName.toLowerCase()}</span></div>
+                        <h1 style={{marginBottom: "5px"}}>Library</h1>
+                        <Books/>
+                    </div>
+                    <div className="col-0 col-lg-2"></div>
+                </div>
             </div>
         );
     }
