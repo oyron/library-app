@@ -12,7 +12,7 @@ class Books extends React.Component {
     }
 
     componentDidMount() {
-        adalApiFetch(fetch, "http://localhost:3000/books")
+        adalApiFetch(fetch, "http://localhost:3000/api/books")
             .then(results => results.json())
             .then(results => {
                 console.log(results);

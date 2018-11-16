@@ -22,11 +22,11 @@
   "license": "ISC",
   "homepage": "http://localhost:3000",
   "dependencies": {
-    "adal-node": "^0.1.28",
     "cors": "^2.8.5",
     "dateformat": "^3.0.3",
     "express": "^4.16.4",
     "http": "0.0.0",
+    "node-cache": "^4.2.0",
     "passport": "^0.4.0",
     "passport-azure-ad": "^4.0.0",
     "path": "^0.12.7",
