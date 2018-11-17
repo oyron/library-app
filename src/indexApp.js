@@ -7,21 +7,34 @@ class Books extends React.Component {
     constructor() {
         super();
         this.state = {
-            books: []
+            books: [],
+            errorMessage: null
         }
     }
 
     componentDidMount() {
         adalApiFetch(fetch, "http://localhost:3000/api/books")
-            .then(results => results.json())
+            .then(results => {
+                if (results.status !== 200) {
+                    console.log("Could not get library data: " + results.statusText);
+                    console.log("body: " + JSON.stringify(results.body));
+                    this.setState({errorMessage: "Could not read library data. Reason: " + results.statusText});
+                    return [];
+                }
+                return results.json();
+            })
             .then(results => {
                 this.setState({books: results});
+            })
+            .catch(error => {
+                console.error(error);
             })
     }
 
     render() {
         return (
             <div>
+                <div>{this.state.errorMessage}</div>
                 <table className="table">
                     <thead>
                         <tr>
@@ -54,14 +67,14 @@ class Page extends React.Component {
         return (
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-0 col-lg-2"></div>
+                    <div className="col-0 col-lg-2"/>
                     <div className="col-12 col-lg-8">
 
                         <div style={{float: 'right'}}>{user.profile.name}<br/><span style={{fontSize: "8px"}}>{user.userName.toLowerCase()}</span></div>
                         <h1 style={{marginBottom: "5px"}}>Library</h1>
                         <Books/>
                     </div>
-                    <div className="col-0 col-lg-2"></div>
+                    <div className="col-0 col-lg-2"/>
                 </div>
             </div>
         );

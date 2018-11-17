@@ -13,12 +13,18 @@ router.use(errorHandler);
 
 
 function booksHandler (req, res) {
+    const apiUrl = 'http://localhost:3100/api/books';
     acquireTokenOnBehalfOf(getBearerToken(req))
-        .then(token => callApi('http://localhost:3100/api/books', token))
-        .then(libraryData => res.send(JSON.parse(libraryData)))
+        .then(token => callApi(apiUrl, token))
+        .then(libraryData => res.send(libraryData.body))
         .catch(error => {
             logger.error(error);
-            res.status(500).send(error)
+            if (error.statusCode) {
+                res.status(error.statusCode).send(error.message);
+            }
+            else {
+                res.status(500).send(error.message);
+            }
         })
 }
 
@@ -31,7 +37,9 @@ function callApi(url, token) {
         url,
         auth: {
             bearer: token
-        }
+        },
+        json: true,
+        resolveWithFullResponse: true
     };
     return rp(options)
 }

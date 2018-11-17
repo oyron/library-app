@@ -1,12 +1,14 @@
 const BearerStrategy = require('passport-azure-ad').BearerStrategy;
 const authConfig = require('./auth-config');
 
-const credentials = {
+const options = {
     identityMetadata: `${authConfig.authorityUrl}/.well-known/openid-configuration`,
-    clientID: authConfig.clientID
+    clientID: authConfig.clientID,
+    passReqToCallback: false,
+    loggingLevel: "warn"
 };
 
-const bearerStrategy = new BearerStrategy(credentials, (token, done) => {
+const bearerStrategy = new BearerStrategy(options, (token, done) => {
     return done(null, token.upn, token);
 });
 
