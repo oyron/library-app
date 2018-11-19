@@ -6,9 +6,11 @@ const acquireTokenOnBehalfOf = require('./auth/aquire-token');
 const rp = require('request-promise');
 const passport = require('passport');
 passport.use(bearerStrategy);
+router.use(passport.initialize());
 
-router.get('*', logRequest);
-router.get("/books", passport.authenticate('oauth-bearer', { session: false }), booksHandler);
+router.all('*', passport.authenticate('oauth-bearer', { session: false }));
+router.all('*', logRequest);
+router.get("/books", booksHandler);
 router.use(errorHandler);
 
 
