@@ -10,33 +10,37 @@ router.use(passport.initialize());
 
 router.all('*', passport.authenticate('oauth-bearer', { session: false }));
 router.all('*', logRequest);
-router.get("/books", booksHandler);
-router.use(errorHandler);
+router.get("/books", getAllBooks);
+router.post("/books", addBook);
+router.use(genericErrorHandler);
 
 
-function booksHandler (req, res) {
+function getAllBooks (req, res) {
     const apiUrl = 'http://localhost:3100/api/books';
     acquireTokenOnBehalfOf(getBearerToken(req))
-        .then(token => callApi(apiUrl, token))
+        .then(token => callApi(apiUrl, {}, 'GET', token))
         .then(libraryData => res.send(libraryData.body))
-        .catch(error => {
-            logger.error(error);
-            if (error.statusCode) {
-                res.status(error.statusCode).send(error.message);
-            }
-            else {
-                res.status(500).send(error.message);
-            }
-        })
+        .catch(error => apiCallErrorHandler(res, error))
+}
+
+function addBook (req, res) {
+    const bookData = req.body;
+    const apiUrl = 'http://localhost:3100/api/books';
+    acquireTokenOnBehalfOf(getBearerToken(req))
+        .then(token => callApi(apiUrl, bookData, 'POST', token))
+        .then(libraryData => res.send(libraryData.body))
+        .catch(error => apiCallErrorHandler(res, error))
 }
 
 function getBearerToken(req) {
     return req.headers.authorization.match(/^Bearer (.*)/)[1];
 }
 
-function callApi(url, token) {
+function callApi(url, body, method, token) {
     const options = {
         url,
+        method,
+        body: body,
         auth: {
             bearer: token
         },
@@ -47,9 +51,19 @@ function callApi(url, token) {
 }
 
 // noinspection JSUnusedLocalSymbols
-function errorHandler (err, req, res, next) {
+function genericErrorHandler (err, req, res, next) {
     logger.error(err.stack);
     res.status(500).send(err.stack);
+}
+
+function apiCallErrorHandler(res, error) {
+    logger.error(error.stack);
+    if (error.statusCode) {
+        res.status(error.statusCode).send(error.message);
+    }
+    else {
+        res.status(500).send(error.message);
+    }
 }
 
 function logRequest(req, res, next) {

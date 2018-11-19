@@ -22,6 +22,7 @@
   "license": "ISC",
   "homepage": "http://localhost:3000",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "dateformat": "^3.0.3",
     "express": "^4.16.4",

@@ -60,6 +60,65 @@ class Books extends React.Component {
     }
 }
 
+class AddBook extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            title: "",
+            author: "",
+            errorMessage: ""
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleChange(event) {
+        const change = {};
+        change[event.target.id] = event.target.value;
+        this.setState(change);
+    }
+
+    handleClick() {
+        adalApiFetch(fetch, "http://localhost:3000/api/books",
+                {
+                    method: 'POST',
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({title: this.state.title, author: this.state.author})
+                })
+            .then(results => {
+                if (results.status !== 200) {
+                    console.log("Could not save book: " + results.statusText);
+                    console.log("body: " + JSON.stringify(results.body));
+                    this.setState({errorMessage: "Could not read library data. Reason: " + results.statusText});
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            })
+    }
+
+    render() {
+        return (
+            <div>
+                <form className="form-inline">
+                    <label className="sr-only" htmlFor="title">Name</label>
+                    <input type="text" className="form-control mb-2 mr-sm-2" id="title" placeholder="Title"
+                           value={this.state.title} onChange={this.handleChange}/>
+
+
+                    <label className="sr-only" htmlFor="author">Name</label>
+                    <input type="text" className="form-control mb-2 mr-sm-2" id="author" placeholder="Author"
+                           value={this.state.author} onChange={this.handleChange}/>
+
+                    <button type="button" className="btn btn-primary mb-2" onClick={this.handleClick}>Add book</button>
+                </form>
+            </div>
+        )
+    }
+}
+
 
 class Page extends React.Component {
     render() {
@@ -73,6 +132,7 @@ class Page extends React.Component {
                         <div style={{float: 'right'}}>{user.profile.name}<br/><span style={{fontSize: "8px"}}>{user.userName.toLowerCase()}</span></div>
                         <h1 style={{marginBottom: "5px"}}>Library</h1>
                         <Books/>
+                        <AddBook/>
                     </div>
                     <div className="col-0 col-lg-2"/>
                 </div>
