@@ -1,4 +1,5 @@
 import React from "react";
+import DeleteButton from "./DeleteButton";
 
 const BookList = (props) => {
     return (
@@ -9,6 +10,7 @@ const BookList = (props) => {
                     <th scope="col" align="left">ID</th>
                     <th scope="col" align="left">Title</th>
                     <th scope="col" align="left">Author</th>
+                    <th/>
                 </tr>
                 </thead>
                 <tbody>
@@ -18,6 +20,7 @@ const BookList = (props) => {
                             <th scope="row">{book.id}</th>
                             <td>{book.title}</td>
                             <td>{book.author}</td>
+                            <td><DeleteButton onClick={props.onDelete} id={book.id}/></td>
                         </tr>
                     );
                 })}

@@ -12,6 +12,7 @@ router.all('*', passport.authenticate('oauth-bearer', { session: false }));
 router.all('*', logRequest);
 router.get("/books", getAllBooks);
 router.post("/books", addBook);
+router.delete('/books/:id', deleteBook);
 router.use(genericErrorHandler);
 
 
@@ -29,6 +30,15 @@ function addBook (req, res) {
     acquireTokenOnBehalfOf(getBearerToken(req))
         .then(token => callApi(apiUrl, bookData, 'POST', token))
         .then(libraryData => res.send(libraryData.body))
+        .catch(error => apiCallErrorHandler(res, error))
+}
+
+function deleteBook (req, res) {
+    const bookId = req.params.id;
+    const apiUrl = `http://localhost:3100/api/books/${bookId}`;
+    acquireTokenOnBehalfOf(getBearerToken(req))
+        .then(token => callApi(apiUrl, {}, 'DELETE', token))
+        .then(() => res.sendStatus(204))
         .catch(error => apiCallErrorHandler(res, error))
 }
 

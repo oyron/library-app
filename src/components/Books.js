@@ -16,12 +16,17 @@ export default class Books extends React.Component {
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     handleChange(event) {
         const newBook = this.state.newBook;
         newBook[event.target.name] = event.target.value;
         this.setState({newBook});
+    }
+
+    handleDelete(event) {
+        this.deleteBook(event.target.id);
     }
 
     handleClick() {
@@ -57,7 +62,7 @@ export default class Books extends React.Component {
     render() {
         return (
             <div>
-                <BookList books={this.state.books} test={this.state.test}/>
+                <BookList books={this.state.books} onDelete={this.handleDelete}/>
                 <form className="form-inline">
                     <Input type={'text'}
                            title= {'Title'}
@@ -73,7 +78,7 @@ export default class Books extends React.Component {
                            placeholder = {'Author'}
                            handleChange = {this.handleChange}
                     />
-                    <button type="button" className="btn btn-primary mb-2" onClick={this.handleClick}>Add book</button>
+                    <button type="button" className="btn btn-primary" onClick={this.handleClick}>Add book</button>
                 </form>
             </div>
         )
@@ -91,6 +96,24 @@ export default class Books extends React.Component {
             })
             .then(results => {
                 this.setState({books: results});
+            })
+            .catch(error => {
+                console.error(error);
+            })
+    }
+
+    deleteBook(id) {
+        adalApiFetch(fetch, `http://localhost:3000/api/books/${id}`,
+            {
+                method: 'DELETE'
+            })
+            .then(results => {
+                if (results.status !== 204) {
+                    console.error("Could not save book: " + results.statusText);
+                }
+                else {
+                    this.fetchBooks();
+                }
             })
             .catch(error => {
                 console.error(error);
