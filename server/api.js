@@ -5,41 +5,44 @@ const bearerStrategy = require('./auth/bearer-strategy');
 const acquireTokenOnBehalfOf = require('./auth/aquire-token');
 const rp = require('request-promise');
 const passport = require('passport');
+const { libraryApiID } = require('./auth/auth-config');
+const permit = require('./auth/permission');
+
 passport.use(bearerStrategy);
 router.use(passport.initialize());
 
+
 router.all('*', passport.authenticate('oauth-bearer', { session: false }));
 router.all('*', logRequest);
-router.get("/books", getAllBooks);
-router.post("/books", addBook);
-router.delete('/books/:id', deleteBook);
+router.get("/books", permit('LibraryReader', 'LibraryAdmin'), getAllBooks);
+router.post("/books", permit('LibraryAdmin'), addBook);
+router.delete('/books/:id', permit('LibraryAdmin'), deleteBook);
 router.use(genericErrorHandler);
 
 
 function getAllBooks (req, res) {
     const apiUrl = 'http://localhost:3100/api/books';
-    acquireTokenOnBehalfOf(getBearerToken(req))
-        .then(token => callApi(apiUrl, {}, 'GET', token))
-        .then(libraryData => res.send(libraryData.body))
-        .catch(error => apiCallErrorHandler(res, error))
+    relayCall(req, res, apiUrl, 'GET', {});
 }
 
 function addBook (req, res) {
     const bookData = req.body;
     const apiUrl = 'http://localhost:3100/api/books';
-    acquireTokenOnBehalfOf(getBearerToken(req))
-        .then(token => callApi(apiUrl, bookData, 'POST', token))
-        .then(libraryData => res.send(libraryData.body))
-        .catch(error => apiCallErrorHandler(res, error))
+    relayCall(req, res, apiUrl, 'POST', bookData);
 }
 
 function deleteBook (req, res) {
     const bookId = req.params.id;
     const apiUrl = `http://localhost:3100/api/books/${bookId}`;
-    acquireTokenOnBehalfOf(getBearerToken(req))
-        .then(token => callApi(apiUrl, {}, 'DELETE', token))
-        .then(() => res.sendStatus(204))
-        .catch(error => apiCallErrorHandler(res, error))
+    relayCall(req, res, apiUrl, 'DELETE', {});
+}
+
+function relayCall(req, res, url, method, body) {
+    logger.debug("About to call: " + url);
+    acquireTokenOnBehalfOf(req.user.upn, getBearerToken(req), libraryApiID)
+        .then(token => callApi(url, body, method, token))
+        .then(libraryData => res.status(libraryData.statusCode).send(libraryData.body))
+        .catch(error => apiCallErrorHandler(res, error, url))
 }
 
 function getBearerToken(req) {
@@ -57,7 +60,12 @@ function callApi(url, body, method, token) {
         json: true,
         resolveWithFullResponse: true
     };
+    logger.debug("Calling " + url);
     return rp(options)
+        .then(response => {
+            logger.debug(JSON.stringify({statusCode: response.statusCode, body: response.body}));
+            return response;
+        });
 }
 
 // noinspection JSUnusedLocalSymbols
@@ -66,8 +74,8 @@ function genericErrorHandler (err, req, res, next) {
     res.status(500).send(err.stack);
 }
 
-function apiCallErrorHandler(res, error) {
-    logger.error(error.stack);
+function apiCallErrorHandler(res, error, url) {
+    logger.error(`Error calling URL: ${url} - ${error.stack}`);
     if (error.statusCode) {
         res.status(error.statusCode).send(error.message);
     }

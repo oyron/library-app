@@ -39,7 +39,7 @@ export default class Books extends React.Component {
                 body: JSON.stringify(this.state.newBook)
             })
             .then(results => {
-                if (results.status !== 200) {
+                if (results.status !== 201) {
                     console.error("Could not save book: " + results.statusText);
                 }
                 else {
