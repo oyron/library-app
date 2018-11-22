@@ -6,15 +6,22 @@ const NodeCache = require( "node-cache" );
 const tokenCache = new NodeCache();
 
 
-function acquireTokenOnBehalfOf(userToken) {
-    const cachedToken = tokenCache.get(userToken);
+function acquireTokenOnBehalfOf(upn, tokenString, resourceId) {
+    const cacheKey = getKey(upn, resourceId);
+    const cachedToken = tokenCache.get(cacheKey);
     if (cachedToken) {
+        logger.debug("Using cached token for resource " + resourceId);
         return Promise.resolve(cachedToken);
     }
-    return acquire(userToken);
+    return acquire(tokenString, resourceId)
+        .then(accessToken => {
+            tokenCache.set(cacheKey, accessToken);
+            return accessToken;
+        });
 }
 
-function acquire(userToken) {
+function acquire(userToken, resourceId) {
+    logger.debug('Acquiring token for resource ' + resourceId);
     const options = {
         method: 'POST',
         uri: authConfig.authorityUrl + '/oauth2/token',
@@ -23,23 +30,21 @@ function acquire(userToken) {
             assertion: userToken,
             client_id: authConfig.clientID,
             client_secret: process.env.CLIENT_SECRET ? process.env.CLIENT_SECRET : '<client secret>',
-            resource: '86a932f7-e20c-48b9-a9a0-70bddb783f34',
+            resource: resourceId,
             requested_token_use: 'on_behalf_of',
             scope: 'openid'
         }
     };
-    logger.debug('Getting on-behalf-of token for user token ' + userToken);
     return rp(options)
-        .then(responseString => {
-            const tokenResponse = JSON.parse(responseString);
-            tokenCache.set(userToken, tokenResponse.access_token, tokenResponse.expires_in);
-            logger.debug('Got on-behalf-of token: ' + tokenResponse.access_token);
-            return tokenResponse.access_token;
-        })
+        .then(responseString => JSON.parse(responseString).access_token)
         .catch(error => {
-            logger.error('Error getting token: ' + error);
+            logger.error('Error getting on-behalf-of token: ' + error);
             throw error;
         })
+}
+
+function getKey(upn, resourceId) {
+    return `${upn}-${resourceId}`;
 }
 
 module.exports = acquireTokenOnBehalfOf;
