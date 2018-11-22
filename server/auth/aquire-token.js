@@ -29,7 +29,7 @@ function acquire(userToken, resourceId) {
             grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
             assertion: userToken,
             client_id: authConfig.clientID,
-            client_secret: process.env.CLIENT_SECRET ? process.env.CLIENT_SECRET : '<client secret>',
+            client_secret: process.env.CLIENT_SECRET ? process.env.CLIENT_SECRET : 'VZTpW1o24C+ecv2jdz7blKE+GnXZOrUQvSjJcnvWUr4=',
             resource: resourceId,
             requested_token_use: 'on_behalf_of',
             scope: 'openid'
