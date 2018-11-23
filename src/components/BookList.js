@@ -10,7 +10,7 @@ const BookList = (props) => {
                     <th scope="col" align="left">ID</th>
                     <th scope="col" align="left">Title</th>
                     <th scope="col" align="left">Author</th>
-                    <th/>
+                    {props.isAdmin ? (<th/>) : (null) }
                 </tr>
                 </thead>
                 <tbody>
@@ -20,7 +20,9 @@ const BookList = (props) => {
                             <th scope="row">{book.id}</th>
                             <td>{book.title}</td>
                             <td>{book.author}</td>
-                            <td><DeleteButton onClick={props.onDelete} id={book.id}/></td>
+                            {props.isAdmin ? (
+                                <td><DeleteButton onClick={props.onDelete} id={book.id}/></td>
+                            ) : (null) }
                         </tr>
                     );
                 })}

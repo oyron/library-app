@@ -7,6 +7,7 @@ export default class Books extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isAdmin: props.isAdmin,
             newBook: {
                 title: "",
                 author: ""
@@ -66,24 +67,28 @@ export default class Books extends React.Component {
         return (
             <div>
                 <div style={{color: 'red'}}>{this.state.errorMessage}</div>
-                <BookList books={this.state.books} onDelete={this.handleDelete}/>
-                <form className="form-inline">
-                    <Input type={'text'}
-                           title= {'Title'}
-                           name= {'title'}
-                           value={this.state.newBook.title}
-                           placeholder = {'Title'}
-                           handleChange = {this.handleChange}
-                    />
-                    <Input type={'text'}
-                           title= {'Author'}
-                           name= {'author'}
-                           value={this.state.newBook.author}
-                           placeholder = {'Author'}
-                           handleChange = {this.handleChange}
-                    />
-                    <button type="button" className="btn btn-primary" onClick={this.handleClick}>Add book</button>
-                </form>
+                <BookList books={this.state.books} onDelete={this.handleDelete} isAdmin={this.state.isAdmin}/>
+                    {this.state.isAdmin ? (
+                        <form className="form-inline">
+                            <Input type={'text'}
+                            title= {'Title'}
+                            name= {'title'}
+                            value={this.state.newBook.title}
+                            placeholder = {'Title'}
+                            handleChange = {this.handleChange}
+                            />
+
+                            <Input type={'text'}
+                            title= {'Author'}
+                            name= {'author'}
+                            value={this.state.newBook.author}
+                            placeholder = {'Author'}
+                            handleChange = {this.handleChange}
+                            />
+                            <button type="button" className="btn btn-primary" onClick={this.handleClick}>Add book</button>
+                        </form>
+                    ) : null
+                }
             </div>
         )
     }
