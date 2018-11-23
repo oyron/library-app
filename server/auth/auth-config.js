@@ -1,5 +1,8 @@
-const authorityUrl  = 'https://login.microsoftonline.com/StatoilSRM.onmicrosoft.com';
-const clientID      = '13fd846e-088a-4014-8843-a7a539ec4c4c';
-const libraryApiID  = '86a932f7-e20c-48b9-a9a0-70bddb783f34';
+const authConfig = {
+    authorityUrl: 'https://login.microsoftonline.com/StatoilSRM.onmicrosoft.com',
+    clientID:     'b73ea05f-55ca-41e0-a246-2b26f1a4ce33',
+    libraryApiID: '9d1e4a2e-c88e-45a5-aef4-199afe38f1cd',
+    clientSecret: process.env.CLIENT_SECRET ? process.env.CLIENT_SECRET : '<client secret>'
+};
 
-module.exports = {authorityUrl, clientID, libraryApiID};
+module.exports = authConfig;

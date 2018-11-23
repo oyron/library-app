@@ -40,7 +40,9 @@ export default class Books extends React.Component {
             })
             .then(results => {
                 if (results.status !== 201) {
-                    console.error("Could not save book: " + results.statusText);
+                    let errorMessage = "Could not save book: " + results.statusText;
+                    console.error(errorMessage);
+                    this.setState({errorMessage});
                 }
                 else {
                     this.fetchBooks();
@@ -52,6 +54,7 @@ export default class Books extends React.Component {
             })
             .catch(error => {
                 console.error(error);
+                this.setState({error});
             })
     }
 
@@ -62,6 +65,7 @@ export default class Books extends React.Component {
     render() {
         return (
             <div>
+                <div style={{color: 'red'}}>{this.state.errorMessage}</div>
                 <BookList books={this.state.books} onDelete={this.handleDelete}/>
                 <form className="form-inline">
                     <Input type={'text'}

@@ -1,6 +1,6 @@
 import { AuthenticationContext, adalFetch } from 'react-adal';
 
-const clientId = "13fd846e-088a-4014-8843-a7a539ec4c4c";
+const clientId = 'b73ea05f-55ca-41e0-a246-2b26f1a4ce33';
 
 export const adalConfig = {
     tenant: 'StatoilSRM.onmicrosoft.com',
