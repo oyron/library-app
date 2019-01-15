@@ -1,9 +1,9 @@
 const logger = require('../logger');
 
-function permit(...allowed) {
+function permit(...allowedRoles) {
     function isAllowed(userRoles) {
-        return userRoles
-            .map(role => allowed.indexOf(role) > -1)
+        return userRoles  //Determine if any of the userRoles is in the list of allowedRoles
+            .map(userRole => allowedRoles.indexOf(userRole) > -1)
             .reduce((acc, curr) => acc || curr, false);
     }
 

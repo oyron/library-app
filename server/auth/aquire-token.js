@@ -7,15 +7,15 @@ const tokenCache = new NodeCache();
 
 
 function acquireTokenOnBehalfOf(upn, tokenString, resourceId) {
-    const cacheKey = getKey(upn, resourceId);
-    const cachedToken = tokenCache.get(cacheKey);
+    const key = getKey(upn, resourceId);
+    const cachedToken = tokenCache.get(key);
     if (cachedToken) {
         logger.debug("Using cached token for resource " + resourceId);
         return Promise.resolve(cachedToken);
     }
     return acquire(tokenString, resourceId)
         .then(accessToken => {
-            tokenCache.set(cacheKey, accessToken);
+            tokenCache.set(key, accessToken);
             return accessToken;
         });
 }

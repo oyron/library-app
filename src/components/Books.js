@@ -1,7 +1,8 @@
 import React from "react";
-import {adalApiFetch} from "../adal-config";
+import { adalApiFetch } from "../adal-config";
 import Input from "./Input";
 import BookList from "./BookList";
+
 
 export default class Books extends React.Component {
     constructor(props) {
@@ -16,7 +17,7 @@ export default class Books extends React.Component {
             errorMessage: ""
         };
         this.handleChange = this.handleChange.bind(this);
-        this.handleClick = this.handleClick.bind(this);
+        this.handleClickAdd = this.handleClickAdd.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
     }
 
@@ -30,33 +31,8 @@ export default class Books extends React.Component {
         this.deleteBook(event.target.id);
     }
 
-    handleClick() {
-        adalApiFetch(fetch, "http://localhost:3000/api/books",
-            {
-                method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(this.state.newBook)
-            })
-            .then(results => {
-                if (results.status !== 201) {
-                    let errorMessage = "Could not save book: " + results.statusText;
-                    console.error(errorMessage);
-                    this.setState({errorMessage});
-                }
-                else {
-                    this.fetchBooks();
-                    const newBook = this.state.newBook;
-                    newBook.author = "";
-                    newBook.title = "";
-                    this.setState({newBook});
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                this.setState({error});
-            })
+    handleClickAdd() {
+        this.addBook(this.state.newBook);
     }
 
     componentDidMount() {
@@ -85,7 +61,7 @@ export default class Books extends React.Component {
                             placeholder = {'Author'}
                             handleChange = {this.handleChange}
                             />
-                            <button type="button" className="btn btn-primary" onClick={this.handleClick}>Add book</button>
+                            <button type="button" className="btn btn-primary" onClick={this.handleClickAdd}>Add book</button>
                         </form>
                     ) : null
                 }
@@ -108,6 +84,34 @@ export default class Books extends React.Component {
             })
             .catch(error => {
                 console.error(error);
+            })
+    }
+
+    addBook(newBook) {
+        adalApiFetch(fetch, "http://localhost:3000/api/books",
+            {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newBook)
+            })
+            .then(results => {
+                if (results.status !== 201) {
+                    let errorMessage = "Could not save book: " + results.statusText;
+                    console.error(errorMessage);
+                    this.setState({errorMessage});
+                }
+                else {
+                    this.fetchBooks();
+                    newBook.author = "";
+                    newBook.title = "";
+                    this.setState({newBook});
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                this.setState({error});
             })
     }
 
